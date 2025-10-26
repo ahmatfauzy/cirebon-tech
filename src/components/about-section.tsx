@@ -5,52 +5,38 @@ import Drone from "../../public/drone-ai.webp";
 
 const AboutSection = () => {
   return (
-    <div className="flex items-center max-w-7xl w-full mx-auto">
-      <div className="flex flex-col items-center justify-center gap-2 px-10">
-        <Badge>About Us</Badge>
-        <p className="text-sm text-center">
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eveniet
-          dignissimos veniam ducimus atque voluptas? Possimus saepe, vel
-          provident cupiditate quasi maxime, animi dolor sequi ducimus quas
-          voluptates inventore. Tempore tempora, quam id error beatae eaque quis
-          nemo architecto qui modi!
-        </p>
+    <section className="flex flex-col items-center max-w-7xl w-full mx-auto md:px-0 px-5 py-10">
+      <Badge className="px-5 text-lg">Tentang AgroWin</Badge>
 
-        <div className="flex items-center justify-between gap-20 mt-5">
-          <Image src={Drone} alt="Drone" width={600} className="rounded-md" />
-          {/* Text */}
-          <div className="grid grid-cols-1 max-w-md gap-5">
-            {/* Grid card */}
-            <div className="flex gap-2">
-              <h2 className="text-5xl font-extrabold">12M+</h2>
-              {/* description */}
-              <div className="flex flex-col gap-2">
-                <h5 className="text-lg font-bold">
-                  Happy Drone Seekers All over the world
-                </h5>
-                <p className="text-sm font-semibold">
-                  Founded by a team of passionate educators and tech enthusiast,
-                  blends innovative technology
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <h2 className="text-5xl font-extrabold">12M+</h2>
-              {/* description */}
-              <div className="flex flex-col gap-2">
-                <h5 className="text-lg font-bold">
-                  Happy Drone Seekers All over the world
-                </h5>
-                <p className="text-sm font-semibold">
-                  Founded by a team of passionate educators and tech enthusiast,
-                  blends innovative technology
-                </p>
-              </div>
-            </div>
-          </div>
+      <div className="flex sm:flex-row flex-col items-center justify-between gap-12 mt-8">
+        <Image
+          src={Drone}
+          alt="AI Agriculture Illustration"
+          width={550}
+          className="rounded-xl shadow-md object-cover"
+          priority
+        />
+
+        <div className="flex flex-col gap-4 max-w-md">
+          <h2 className="text-3xl md:text-4xl font-bold leading-tight">
+            Inovasi AI untuk Pertanian Cerdas
+          </h2>
+
+          <p className="text-sm md:text-base text-muted-foreground">
+            AgroWin dikembangkan untuk membantu petani menentukan waktu tanam
+            dan panen terbaik, mendeteksi tanda awal penyakit tanaman, serta
+            memahami kondisi lingkungan melalui analisis berbasis kecerdasan
+            buatan.
+          </p>
+
+          <p className="text-sm md:text-base text-muted-foreground">
+            AgroWin masih dalam tahap pengembangan dan uji coba internal, dengan
+            fokus pada penyempurnaan model AI dan kemudahan penggunaan bagi
+            petani.
+          </p>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
