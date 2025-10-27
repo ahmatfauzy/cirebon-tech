@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/layout/footer";
 import Header from "@/components/layout/header";
+import ChatBot from "@/components/chatbot";
 const poppins = Poppins({
   subsets: ["latin"],
   variable: "--font-poppins",
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body className={`${poppins.variable} ${poppins.className} antialiased`}>
         <Header />
         {children}
+        <ChatBot />
         <Footer />
       </body>
     </html>

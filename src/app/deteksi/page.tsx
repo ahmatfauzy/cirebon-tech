@@ -683,8 +683,8 @@ export default function DeteksiPage() {
             </div>
 
             {/* Harvest Calculator */}
-            <div className=" space-y-8">
-              <div className="col-span-2 bg-card border border-border rounded-xl p-6">
+            <div className="space-y-8">
+              <div className="w-full h-full col-span-2 bg-card border border-border rounded-xl p-6">
                 <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
                   <Calculator className="text-primary" />
                   Kalkulator Estimasi Panen

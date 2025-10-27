@@ -6,7 +6,7 @@ import HeroSection from "@/components/hero-section";
 export default function Home() {
   return (
     <>
-      <div className="flex flex-col gap-4 overflow-hidden">
+      <div className="relative flex flex-col gap-4 overflow-hidden">
         <section className="flex flex-col gap-4">
           <HeroSection />
           <AboutSection />

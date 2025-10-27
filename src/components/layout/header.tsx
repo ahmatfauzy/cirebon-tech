@@ -43,10 +43,15 @@ const isDropdownActive = (item: NavItem, pathname: string) => {
 };
 
 const linkBase =
-  "relative text-foreground flex items-center space-x-1 font-medium transition-colors duration-200 hover:text-primary";
+  "relative inline-flex items-center gap-1 px-3 py-2 font-medium transition-colors group";
 
-const activeUnderline =
-  "after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-full after:rounded-full after:bg-primary";
+const cornersBase = "pointer-events-none absolute inset-0 rounded-md";
+
+const corner =
+  "absolute h-3 w-3 border-primary transition-all duration-200 opacity-0 " +
+  "group-hover:opacity-100";
+
+const cornerActive = "opacity-100";
 
 export default function Header1() {
   const { data: session, isPending } = authClient.useSession();
@@ -104,12 +109,10 @@ export default function Header1() {
                   <Link
                     prefetch={false}
                     href={item.href}
-                    className={`${linkBase} ${
-                      active ? activeUnderline + " text-primary" : ""
-                    }`}
+                    className={`${linkBase} ${active ? "text-primary" : ""}`}
                     aria-current={active ? "page" : undefined}
                   >
-                    <span>{item.name}</span>
+                    <span className="relative z-10">{item.name}</span>
                     {item.hasDropdown && (
                       <ChevronDown
                         className={`h-4 w-4 transition-transform duration-200 ${
@@ -117,6 +120,34 @@ export default function Header1() {
                         }`}
                       />
                     )}
+
+                    {/* FRAME SUDUT */}
+                    <span aria-hidden className={cornersBase}>
+                      {/* Top-Left */}
+                      <span
+                        className={`${corner} -top-1 -left-1 border-t-2 border-l-2 ${
+                          active ? cornerActive : ""
+                        }`}
+                      />
+                      {/* Top-Right */}
+                      <span
+                        className={`${corner} -top-1 -right-1 border-t-2 border-r-2 ${
+                          active ? cornerActive : ""
+                        }`}
+                      />
+                      {/* Bottom-Left */}
+                      <span
+                        className={`${corner} -bottom-1 -left-1 border-b-2 border-l-2 ${
+                          active ? cornerActive : ""
+                        }`}
+                      />
+                      {/* Bottom-Right */}
+                      <span
+                        className={`${corner} -bottom-1 -right-1 border-b-2 border-r-2 ${
+                          active ? cornerActive : ""
+                        }`}
+                      />
+                    </span>
                   </Link>
 
                   {item.hasDropdown && (
@@ -238,7 +269,7 @@ export default function Header1() {
                 })}
                 <div className="space-y-2 px-4 py-2">
                   {isAuthenticated ? (
-                    <>
+                    <div className="flex items-center gap-2">
                       <Link href="/">
                         <Button variant="outline">
                           <Search />
@@ -246,7 +277,7 @@ export default function Header1() {
                         </Button>
                       </Link>
                       <UserButton />
-                    </>
+                    </div>
                   ) : (
                     <Link href="/login">
                       <Button variant="outline">Login</Button>

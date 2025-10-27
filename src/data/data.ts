@@ -27,13 +27,13 @@ export const features = [
   },
   {
     icon: MessageSquare,
-    title: "AgriBot",
+    title: "AgroWin Bot",
     description:
       "Chatbot interaktif yang membantu menjawab pertanyaan seputar pertanian dan penggunaan aplikasi",
   },
   {
     icon: BookOpen,
-    title: "AgriEdu Hub",
+    title: "AgroEdu Hub",
     description:
       "Platform pembelajaran singkat tentang pertanian cerdas, teknologi AI, dan praktik berkelanjutan.",
   },

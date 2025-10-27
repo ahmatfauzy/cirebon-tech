@@ -151,8 +151,8 @@ export default function EdukasiPage() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Section */}
-      <section className="flex sm:flex-row flex-col-reverse items-center justify-center md:gap-40 sm:gap-20 gap-4 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-primary-foreground py-16 md:py-24">
-        <div className="md:px-0 sm:px-7 ">
+      <section className="flex sm:flex-row flex-col-reverse items-center justify-center md:gap-40 sm:gap-20 gap-4 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-primary-foreground py-16 md:py-24 md:px-6 sm:px-10 px-5">
+        <div>
           <h1 className="text-xl sm:text-4xl md:text-5xl font-bold mb-4 text-balance">
             Edukasi AgroWin
           </h1>
