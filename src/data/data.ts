@@ -27,7 +27,7 @@ export const features = [
   },
   {
     icon: MessageSquare,
-    title: "AgroWin Bot",
+    title: "AgroBot",
     description:
       "Chatbot interaktif yang membantu menjawab pertanyaan seputar pertanian dan penggunaan aplikasi",
   },

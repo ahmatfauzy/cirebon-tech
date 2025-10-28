@@ -204,10 +204,10 @@ export default function Header1() {
                 {isAuthenticated ? (
                   <>
                     <Link href="/">
-                      <Button variant="outline">
+                      {/* <Button variant="outline">
                         <Search />
                         Test
-                      </Button>
+                      </Button> */}
                     </Link>
                     <UserButton />
                   </>

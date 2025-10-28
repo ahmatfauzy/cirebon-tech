@@ -1,5 +1,5 @@
 import AboutSection from "@/components/about-section";
-import CalculateSection from "@/components/calculate-section";
+import CalculateSection from "@/components/CTADetectSection";
 import FeatureSection from "@/components/feature-section";
 import HeroSection from "@/components/hero-section";
 

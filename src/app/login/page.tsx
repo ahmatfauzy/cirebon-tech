@@ -98,7 +98,7 @@ export default function LoginForm() {
             </Button>
           </div>
 
-          <div className="space-y-3 mb-8 mt-5">
+          {/* <div className="space-y-3 mb-8 mt-5">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center mt-0.5">
                 <div className="w-2 h-2 rounded-full bg-primary"></div>
@@ -125,7 +125,7 @@ export default function LoginForm() {
                 <span className="font-semibold">Prediksi Cuaca</span> akurat
               </p>
             </div>
-          </div>
+          </div> */}
 
           <p className="text-xs  text-left font-mono dark:text-foreground border-t border-dashed pt-6">
             By signing in you agree to our{" "}

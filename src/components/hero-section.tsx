@@ -7,7 +7,7 @@ import User from "../../public/profile-farmer.webp";
 export default function HeroSection() {
   return (
     <section className="relative w-full">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           <div className="order-1 lg:order-2 lg:col-span-6">
             <div className="relative flex items-center justify-center w-full aspect-[5/4] sm:aspect-[4/3] md:aspect-[4/3]">

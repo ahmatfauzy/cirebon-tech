@@ -125,7 +125,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ onChatStateChange }) => {
         ) : (
           <>
             <Bot size={22} />
-            <span className="hidden sm:inline">AgroWin Bot</span>
+            <span className="hidden sm:inline">AgroBot</span>
           </>
         )}
       </button>
@@ -138,7 +138,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ onChatStateChange }) => {
         >
           {/* Header */}
           <div className="bg-primary/90 text-white p-4 rounded-t-lg">
-            <h3 className="font-semibold text-lg">AgroWin Bot</h3>
+            <h3 className="font-semibold text-lg">AgroBot</h3>
             <p className="text-sm text-blue-100">Asisten Seputar Pertanian</p>
           </div>
 
@@ -147,7 +147,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ onChatStateChange }) => {
             {messages.length === 0 && (
               <div className="text-gray-400 text-sm">
                 <p>
-                  👋 Halo! Saya AgroWin Bot, asisten untuk membantu seputar
+                  👋 Halo! Saya AgroBot, asisten untuk membantu seputar
                   pertanian
                 </p>
               </div>
@@ -175,7 +175,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ onChatStateChange }) => {
             {isLoading && (
               <div className="flex justify-start">
                 <div className="bg-gray-700 text-gray-100 p-3 rounded-lg text-sm animate-pulse">
-                  AgroWin Bot sedang mengetik...
+                  AgroBot sedang mengetik...
                 </div>
               </div>
             )}
