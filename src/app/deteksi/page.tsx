@@ -11,6 +11,7 @@ import {
   Cloud,
 } from "lucide-react";
 import Image from "next/image";
+import AuthGuard from "@/components/AuthGuard";
 
 type Disease = {
   id: number;
@@ -323,362 +324,362 @@ export default function DeteksiPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Header Section */}
-      <section className="flex sm:flex-row flex-col-reverse items-center justify-center md:gap-40 sm:gap-20 gap-4 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-12 md:py-16">
-        <div className="lg:px-2 md:px-5 sm:px-10 px-5">
-          <h1 className="text-xl sm:text-4xl md:text-5xl font-bold mb-4 text-balance">
-            Deteksi & Kalkulator Pertanian
-          </h1>
-          <p className="md:text-lg text-sm opacity-90 max-w-2xl">
-            Hitung estimasi panen, dapatkan rekomendasi tanam yang optimal, dan
-            deteksi penyakit tanaman untuk lahan Anda.
-          </p>
-        </div>
-        <div>
-          <ScanSearch className="size-52" />
-        </div>
-      </section>
+    <AuthGuard>
+      <div className="min-h-screen flex flex-col">
+        {/* Header Section */}
+        <section className="flex sm:flex-row flex-col-reverse items-center justify-center md:gap-40 sm:gap-20 gap-4 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-12 md:py-16">
+          <div className="lg:px-2 md:px-5 sm:px-10 px-5">
+            <h1 className="text-xl sm:text-4xl md:text-5xl font-bold mb-4 text-balance">
+              Deteksi & Kalkulator Pertanian
+            </h1>
+            <p className="md:text-lg text-sm opacity-90 max-w-2xl">
+              Hitung estimasi panen, dapatkan rekomendasi tanam yang optimal,
+              dan deteksi penyakit tanaman untuk lahan Anda.
+            </p>
+          </div>
+          <div>
+            <ScanSearch className="size-52" />
+          </div>
+        </section>
 
-      {/* Main Content */}
-      <section className="flex-1 py-12 md:py-20 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Planting Recommendation */}
-              <div className="bg-card border border-border rounded-xl p-6">
-                <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-                  <MapPin className="text-primary" />
-                  Rekomendasi Tanam Optimal
-                </h2>
+        {/* Main Content */}
+        <section className="flex-1 py-12 md:py-20 bg-background">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Planting Recommendation */}
+                <div className="bg-card border border-border rounded-xl p-6">
+                  <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
+                    <MapPin className="text-primary" />
+                    Rekomendasi Tanam Optimal
+                  </h2>
 
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-foreground mb-2">
+                          Jenis Tanaman
+                        </label>
+                        <select
+                          value={plantingData.selectedCrop}
+                          onChange={(e) =>
+                            setPlantingData((prev) => ({
+                              ...prev,
+                              selectedCrop: e.target.value,
+                            }))
+                          }
+                          className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                        >
+                          {cropOptions.map((crop) => (
+                            <option key={crop.value} value={crop.value}>
+                              {crop.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-foreground mb-2">
+                          Nama Daerah
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Contoh: Jakarta"
+                          value={plantingData.locationName}
+                          onChange={(e) =>
+                            setPlantingData((prev) => ({
+                              ...prev,
+                              locationName: e.target.value,
+                            }))
+                          }
+                          className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button
+                        onClick={getCurrentLocation}
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-border rounded-lg bg-background text-foreground hover:bg-muted transition-colors"
+                      >
+                        <MapPin size={16} />
+                        Gunakan Lokasi Saat Ini
+                      </button>
+
+                      <button
+                        onClick={handlePlantingRecommendation}
+                        disabled={plantingData.isGettingRecommendation}
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+                      >
+                        <Cloud size={16} />
+                        {plantingData.isGettingRecommendation
+                          ? "Menganalisis..."
+                          : "Dapatkan Rekomendasi"}
+                      </button>
+                    </div>
+
+                    {plantingData.recommendationResult && (
+                      <div className="mt-4 p-4 bg-muted rounded-lg space-y-4">
+                        <h4 className="font-semibold text-foreground">
+                          Rekomendasi Tanam:
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <p className="text-sm">
+                              <strong>Status:</strong>
+                              <span
+                                className={`ml-2 px-2 py-1 rounded text-xs ${
+                                  plantingData.recommendationResult
+                                    .recommendation.status === "optimal"
+                                    ? "bg-green-100 text-green-800"
+                                    : plantingData.recommendationResult
+                                        .recommendation.status === "good"
+                                    ? "bg-blue-100 text-blue-800"
+                                    : plantingData.recommendationResult
+                                        .recommendation.status === "poor"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : "bg-red-100 text-red-800"
+                                }`}
+                              >
+                                {
+                                  plantingData.recommendationResult
+                                    .recommendation.statusText
+                                }
+                              </span>
+                            </p>
+                            <p className="text-sm">
+                              <strong>Rekomendasi:</strong>{" "}
+                              {
+                                plantingData.recommendationResult.recommendation
+                                  .recommendation
+                              }
+                            </p>
+                            {Array.isArray(
+                              plantingData.recommendationResult.recommendation
+                                .bestDates
+                            ) &&
+                              plantingData.recommendationResult.recommendation
+                                .bestDates.length > 0 && (
+                                <p className="text-sm">
+                                  <strong>Tanggal Terbaik:</strong>{" "}
+                                  {plantingData.recommendationResult.recommendation.bestDates.join(
+                                    ", "
+                                  )}
+                                </p>
+                              )}
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-sm">
+                              <strong>Suhu Rata-rata:</strong>{" "}
+                              {
+                                plantingData.recommendationResult.recommendation
+                                  .avgTemp
+                              }
+                              °C
+                            </p>
+                            <p className="text-sm">
+                              <strong>Total Curah Hujan:</strong>{" "}
+                              {
+                                plantingData.recommendationResult.recommendation
+                                  .totalRainfall
+                              }
+                              mm
+                            </p>
+                            <p className="text-sm">
+                              <strong>Kelembaban Rata-rata:</strong>{" "}
+                              {
+                                plantingData.recommendationResult.recommendation
+                                  .avgHumidity
+                              }
+                              %
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Harvest Calculator */}
+                <div className="bg-card border border-border rounded-xl p-6">
+                  <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
+                    <Calculator className="text-primary" />
+                    Kalkulator Estimasi Panen
+                  </h2>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div>
                       <label className="block text-sm font-semibold text-foreground mb-2">
                         Jenis Tanaman
                       </label>
                       <select
-                        value={plantingData.selectedCrop}
+                        value={harvestData.cropType}
                         onChange={(e) =>
-                          setPlantingData((prev) => ({
+                          setHarvestData((prev) => ({
                             ...prev,
-                            selectedCrop: e.target.value,
+                            cropType: e.target.value,
                           }))
                         }
                         className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                       >
-                        {cropOptions.map((crop) => (
-                          <option key={crop.value} value={crop.value}>
-                            {crop.label}
-                          </option>
-                        ))}
+                        <option value="padi">Padi</option>
+                        <option value="jagung">Jagung</option>
+                        <option value="kacang">Kacang Tanah</option>
+                        <option value="cabai">Cabai</option>
                       </select>
                     </div>
 
                     <div>
                       <label className="block text-sm font-semibold text-foreground mb-2">
-                        Nama Daerah
+                        Tanggal Tanam
                       </label>
                       <input
-                        type="text"
-                        placeholder="Contoh: Jakarta"
-                        value={plantingData.locationName}
+                        type="date"
+                        value={harvestData.plantingDate}
                         onChange={(e) =>
-                          setPlantingData((prev) => ({
+                          setHarvestData((prev) => ({
                             ...prev,
-                            locationName: e.target.value,
+                            plantingDate: e.target.value,
+                          }))
+                        }
+                        className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-foreground mb-2">
+                        Luas Lahan (Hektar)
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="Contoh: 2.5"
+                        value={harvestData.landArea}
+                        onChange={(e) =>
+                          setHarvestData((prev) => ({
+                            ...prev,
+                            landArea: e.target.value,
                           }))
                         }
                         className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                       />
                     </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-foreground mb-2">
+                        Estimasi Hasil Panen
+                      </label>
+                      <input
+                        type="text"
+                        value={
+                          harvestData.expectedYield
+                            ? `${harvestData.expectedYield} ton`
+                            : ""
+                        }
+                        disabled
+                        className="w-full px-4 py-2 border border-border rounded-lg bg-muted text-foreground focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-foreground mb-2">
+                        Harga Jual per Kg (Rp)
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="Contoh: 5000"
+                        value={harvestData.pricePerKg}
+                        onChange={(e) =>
+                          setHarvestData((prev) => ({
+                            ...prev,
+                            pricePerKg: e.target.value,
+                          }))
+                        }
+                        className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-foreground mb-2">
+                        Total Harga Penjualan
+                      </label>
+                      <input
+                        type="text"
+                        value={
+                          harvestData.totalSalesPrice
+                            ? `Rp ${Number(
+                                harvestData.totalSalesPrice
+                              ).toLocaleString("id-ID")}`
+                            : ""
+                        }
+                        disabled
+                        className="w-full px-4 py-2 border border-border rounded-lg bg-muted text-foreground focus:outline-none font-semibold"
+                      />
+                    </div>
                   </div>
 
-                  <div className="flex gap-2">
-                    <button
-                      onClick={getCurrentLocation}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-border rounded-lg bg-background text-foreground hover:bg-muted transition-colors"
-                    >
-                      <MapPin size={16} />
-                      Gunakan Lokasi Saat Ini
-                    </button>
+                  <button
+                    onClick={calculateHarvest}
+                    className="w-full bg-accent text-accent-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+                  >
+                    Hitung Estimasi Panen
+                  </button>
 
-                    <button
-                      onClick={handlePlantingRecommendation}
-                      disabled={plantingData.isGettingRecommendation}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
-                    >
-                      <Cloud size={16} />
-                      {plantingData.isGettingRecommendation
-                        ? "Menganalisis..."
-                        : "Dapatkan Rekomendasi"}
-                    </button>
-                  </div>
+                  {harvestData.expectedYield && (
+                    <div className="mt-6 space-y-3">
+                      <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
+                        <p className="text-sm text-foreground">
+                          <strong>Hasil Estimasi:</strong> Berdasarkan data
+                          Anda, estimasi hasil panen adalah{" "}
+                          <span className="text-primary font-bold">
+                            {harvestData.expectedYield} ton
+                          </span>{" "}
+                          untuk luas lahan {harvestData.landArea} hektar.
+                        </p>
+                        {harvestData.harvestDate && (
+                          <p className="text-sm text-foreground mt-2">
+                            <strong>Tanggal Panen:</strong>{" "}
+                            {new Date(
+                              harvestData.harvestDate
+                            ).toLocaleDateString("id-ID", {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            })}
+                          </p>
+                        )}
+                      </div>
 
-                  {plantingData.recommendationResult && (
-                    <div className="mt-4 p-4 bg-muted rounded-lg space-y-4">
-                      <h4 className="font-semibold text-foreground">
-                        Rekomendasi Tanam:
-                      </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <p className="text-sm">
-                            <strong>Status:</strong>
-                            <span
-                              className={`ml-2 px-2 py-1 rounded text-xs ${
-                                plantingData.recommendationResult.recommendation
-                                  .status === "optimal"
-                                  ? "bg-green-100 text-green-800"
-                                  : plantingData.recommendationResult
-                                      .recommendation.status === "good"
-                                  ? "bg-blue-100 text-blue-800"
-                                  : plantingData.recommendationResult
-                                      .recommendation.status === "poor"
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : "bg-red-100 text-red-800"
-                              }`}
-                            >
-                              {
-                                plantingData.recommendationResult.recommendation
-                                  .statusText
-                              }
+                      {harvestData.totalSalesPrice && (
+                        <div className="p-4 bg-accent/10 border border-accent/20 rounded-lg">
+                          <p className="text-sm text-foreground">
+                            <strong>Total Harga Penjualan:</strong> Dengan harga
+                            jual Rp{" "}
+                            {Number(harvestData.pricePerKg).toLocaleString(
+                              "id-ID"
+                            )}
+                            /kg, total pendapatan penjualan Anda adalah{" "}
+                            <span className="text-accent font-bold">
+                              Rp{" "}
+                              {Number(
+                                harvestData.totalSalesPrice
+                              ).toLocaleString("id-ID")}
                             </span>
                           </p>
-                          <p className="text-sm">
-                            <strong>Rekomendasi:</strong>{" "}
-                            {
-                              plantingData.recommendationResult.recommendation
-                                .recommendation
-                            }
-                          </p>
-                          {Array.isArray(
-                            plantingData.recommendationResult.recommendation
-                              .bestDates
-                          ) &&
-                            plantingData.recommendationResult.recommendation
-                              .bestDates.length > 0 && (
-                              <p className="text-sm">
-                                <strong>Tanggal Terbaik:</strong>{" "}
-                                {plantingData.recommendationResult.recommendation.bestDates.join(
-                                  ", "
-                                )}
-                              </p>
-                            )}
                         </div>
-                        <div className="space-y-1">
-                          <p className="text-sm">
-                            <strong>Suhu Rata-rata:</strong>{" "}
-                            {
-                              plantingData.recommendationResult.recommendation
-                                .avgTemp
-                            }
-                            °C
-                          </p>
-                          <p className="text-sm">
-                            <strong>Total Curah Hujan:</strong>{" "}
-                            {
-                              plantingData.recommendationResult.recommendation
-                                .totalRainfall
-                            }
-                            mm
-                          </p>
-                          <p className="text-sm">
-                            <strong>Kelembaban Rata-rata:</strong>{" "}
-                            {
-                              plantingData.recommendationResult.recommendation
-                                .avgHumidity
-                            }
-                            %
-                          </p>
-                        </div>
-                      </div>
+                      )}
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Harvest Calculator */}
               <div className="bg-card border border-border rounded-xl p-6">
                 <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-                  <Calculator className="text-primary" />
-                  Kalkulator Estimasi Panen
+                  <AlertCircle className="text-accent" />
+                  Pendeteksi Penyakit Tanaman
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-foreground mb-2">
-                      Jenis Tanaman
-                    </label>
-                    <select
-                      value={harvestData.cropType}
-                      onChange={(e) =>
-                        setHarvestData((prev) => ({
-                          ...prev,
-                          cropType: e.target.value,
-                        }))
-                      }
-                      className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    >
-                      <option value="padi">Padi</option>
-                      <option value="jagung">Jagung</option>
-                      <option value="kacang">Kacang Tanah</option>
-                      <option value="cabai">Cabai</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-foreground mb-2">
-                      Tanggal Tanam
-                    </label>
-                    <input
-                      type="date"
-                      value={harvestData.plantingDate}
-                      onChange={(e) =>
-                        setHarvestData((prev) => ({
-                          ...prev,
-                          plantingDate: e.target.value,
-                        }))
-                      }
-                      className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-foreground mb-2">
-                      Luas Lahan (Hektar)
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="Contoh: 2.5"
-                      value={harvestData.landArea}
-                      onChange={(e) =>
-                        setHarvestData((prev) => ({
-                          ...prev,
-                          landArea: e.target.value,
-                        }))
-                      }
-                      className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-foreground mb-2">
-                      Estimasi Hasil Panen
-                    </label>
-                    <input
-                      type="text"
-                      value={
-                        harvestData.expectedYield
-                          ? `${harvestData.expectedYield} ton`
-                          : ""
-                      }
-                      disabled
-                      className="w-full px-4 py-2 border border-border rounded-lg bg-muted text-foreground focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-foreground mb-2">
-                      Harga Jual per Kg (Rp)
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="Contoh: 5000"
-                      value={harvestData.pricePerKg}
-                      onChange={(e) =>
-                        setHarvestData((prev) => ({
-                          ...prev,
-                          pricePerKg: e.target.value,
-                        }))
-                      }
-                      className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-foreground mb-2">
-                      Total Harga Penjualan
-                    </label>
-                    <input
-                      type="text"
-                      value={
-                        harvestData.totalSalesPrice
-                          ? `Rp ${Number(
-                              harvestData.totalSalesPrice
-                            ).toLocaleString("id-ID")}`
-                          : ""
-                      }
-                      disabled
-                      className="w-full px-4 py-2 border border-border rounded-lg bg-muted text-foreground focus:outline-none font-semibold"
-                    />
-                  </div>
-                </div>
-
-                <button
-                  onClick={calculateHarvest}
-                  className="w-full bg-accent text-accent-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
-                >
-                  Hitung Estimasi Panen
-                </button>
-
-                {harvestData.expectedYield && (
-                  <div className="mt-6 space-y-3">
-                    <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
-                      <p className="text-sm text-foreground">
-                        <strong>Hasil Estimasi:</strong> Berdasarkan data Anda,
-                        estimasi hasil panen adalah{" "}
-                        <span className="text-primary font-bold">
-                          {harvestData.expectedYield} ton
-                        </span>{" "}
-                        untuk luas lahan {harvestData.landArea} hektar.
-                      </p>
-                      {harvestData.harvestDate && (
-                        <p className="text-sm text-foreground mt-2">
-                          <strong>Tanggal Panen:</strong>{" "}
-                          {new Date(harvestData.harvestDate).toLocaleDateString(
-                            "id-ID",
-                            {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            }
-                          )}
-                        </p>
-                      )}
-                    </div>
-
-                    {harvestData.totalSalesPrice && (
-                      <div className="p-4 bg-accent/10 border border-accent/20 rounded-lg">
-                        <p className="text-sm text-foreground">
-                          <strong>Total Harga Penjualan:</strong> Dengan harga
-                          jual Rp{" "}
-                          {Number(harvestData.pricePerKg).toLocaleString(
-                            "id-ID"
-                          )}
-                          /kg, total pendapatan penjualan Anda adalah{" "}
-                          <span className="text-accent font-bold">
-                            Rp{" "}
-                            {Number(harvestData.totalSalesPrice).toLocaleString(
-                              "id-ID"
-                            )}
-                          </span>
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="bg-card border border-border rounded-xl p-6">
-              <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-                <AlertCircle className="text-accent" />
-                Pendeteksi Penyakit Tanaman
-              </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                {/* <div>
+                  {/* <div>
                   <label className="block text-sm font-semibold text-foreground mb-2">
                     Jenis Tanaman
                   </label>
@@ -698,7 +699,7 @@ export default function DeteksiPage() {
                   </select>
                 </div> */}
 
-                {/* <div>
+                  {/* <div>
                   <label className="block text-sm font-semibold text-foreground mb-2">
                     Lokasi Lahan
                   </label>
@@ -715,136 +716,144 @@ export default function DeteksiPage() {
                     className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div> */}
-              </div>
-
-              <div className="mb-6">
-                <label className="block text-sm font-semibold text-foreground mb-3">
-                  Upload Foto Tanaman
-                </label>
-                <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    id="disease-image-input"
-                  />
-                  <label
-                    htmlFor="disease-image-input"
-                    className="cursor-pointer"
-                  >
-                    <Upload
-                      className="mx-auto mb-2 text-muted-foreground"
-                      size={32}
-                    />
-                    <p className="text-sm font-medium text-foreground">
-                      Klik untuk upload atau drag & drop
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      PNG, JPG, GIF (Max 5MB)
-                    </p>
-                  </label>
                 </div>
 
-                {diseaseData.imagePreview && (
-                  <div className="mt-4">
-                    <Image
-                      width={500}
-                      height={500}
-                      src={diseaseData.imagePreview || "/placeholder.svg"}
-                      alt="Preview"
-                      className="w-full h-48 object-cover rounded-lg border border-border"
+                <div className="mb-6">
+                  <label className="block text-sm font-semibold text-foreground mb-3">
+                    Upload Foto Tanaman
+                  </label>
+                  <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      id="disease-image-input"
                     />
-                    <button
-                      onClick={() =>
-                        setDiseaseData((prev) => ({
-                          ...prev,
-                          image: null,
-                          imagePreview: null,
-                          detectionResult: null,
-                        }))
-                      }
-                      className="mt-2 text-sm text-accent hover:underline"
+                    <label
+                      htmlFor="disease-image-input"
+                      className="cursor-pointer"
                     >
-                      Ganti Gambar
-                    </button>
+                      <Upload
+                        className="mx-auto mb-2 text-muted-foreground"
+                        size={32}
+                      />
+                      <p className="text-sm font-medium text-foreground">
+                        Klik untuk upload atau drag & drop
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        PNG, JPG, GIF (Max 5MB)
+                      </p>
+                    </label>
+                  </div>
+
+                  {diseaseData.imagePreview && (
+                    <div className="mt-4">
+                      <Image
+                        width={500}
+                        height={500}
+                        src={diseaseData.imagePreview || "/placeholder.svg"}
+                        alt="Preview"
+                        className="w-full h-48 object-cover rounded-lg border border-border"
+                      />
+                      <button
+                        onClick={() =>
+                          setDiseaseData((prev) => ({
+                            ...prev,
+                            image: null,
+                            imagePreview: null,
+                            detectionResult: null,
+                          }))
+                        }
+                        className="mt-2 text-sm text-accent hover:underline"
+                      >
+                        Ganti Gambar
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  onClick={handleDetectDisease}
+                  disabled={
+                    !diseaseData.imagePreview || diseaseData.isDetecting
+                  }
+                  className="w-full bg-accent text-accent-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+                >
+                  {diseaseData.isDetecting
+                    ? "Mendeteksi..."
+                    : "Deteksi Penyakit"}
+                </button>
+
+                {diseaseData.detectionResult && (
+                  <div className="mt-6 space-y-4">
+                    <div className="p-4 bg-accent/10 border border-accent/20 rounded-lg">
+                      <div className="flex items-start gap-3">
+                        <AlertCircle
+                          className="text-accent flex-shrink-0 mt-1"
+                          size={20}
+                        />
+                        <div className="flex-1">
+                          <h3 className="font-bold text-foreground text-lg">
+                            {diseaseData.detectionResult.name}
+                          </h3>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Tingkat Kepercayaan:{" "}
+                            <span className="font-semibold text-foreground">
+                              {diseaseData.detectionResult.confidence.toFixed(
+                                2
+                              )}
+                              %
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+                      <p className="text-xs font-semibold text-green-700 mb-3">
+                        PENCEGAHAN
+                      </p>
+                      <ul className="space-y-2">
+                        {diseaseData.detectionResult.prevention.map(
+                          (item, index) => (
+                            <li
+                              key={index}
+                              className="text-sm text-foreground flex items-start gap-2"
+                            >
+                              <span className="text-green-600 mt-1">•</span>
+                              <span>{item}</span>
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+
+                    <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
+                      <p className="text-xs font-semibold text-primary mb-3">
+                        PENANGANAN
+                      </p>
+                      <ul className="space-y-2">
+                        {diseaseData.detectionResult.treatment.map(
+                          (item, index) => (
+                            <li
+                              key={index}
+                              className="text-sm text-foreground flex items-start gap-2"
+                            >
+                              <span className="text-primary mt-1">•</span>
+                              <span>{item}</span>
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </div>
                   </div>
                 )}
               </div>
-
-              <button
-                onClick={handleDetectDisease}
-                disabled={!diseaseData.imagePreview || diseaseData.isDetecting}
-                className="w-full bg-accent text-accent-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
-              >
-                {diseaseData.isDetecting ? "Mendeteksi..." : "Deteksi Penyakit"}
-              </button>
-
-              {diseaseData.detectionResult && (
-                <div className="mt-6 space-y-4">
-                  <div className="p-4 bg-accent/10 border border-accent/20 rounded-lg">
-                    <div className="flex items-start gap-3">
-                      <AlertCircle
-                        className="text-accent flex-shrink-0 mt-1"
-                        size={20}
-                      />
-                      <div className="flex-1">
-                        <h3 className="font-bold text-foreground text-lg">
-                          {diseaseData.detectionResult.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Tingkat Kepercayaan:{" "}
-                          <span className="font-semibold text-foreground">
-                            {diseaseData.detectionResult.confidence.toFixed(2)}%
-                          </span>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
-                    <p className="text-xs font-semibold text-green-700 mb-3">
-                      PENCEGAHAN
-                    </p>
-                    <ul className="space-y-2">
-                      {diseaseData.detectionResult.prevention.map(
-                        (item, index) => (
-                          <li
-                            key={index}
-                            className="text-sm text-foreground flex items-start gap-2"
-                          >
-                            <span className="text-green-600 mt-1">•</span>
-                            <span>{item}</span>
-                          </li>
-                        )
-                      )}
-                    </ul>
-                  </div>
-
-                  <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
-                    <p className="text-xs font-semibold text-primary mb-3">
-                      PENANGANAN
-                    </p>
-                    <ul className="space-y-2">
-                      {diseaseData.detectionResult.treatment.map(
-                        (item, index) => (
-                          <li
-                            key={index}
-                            className="text-sm text-foreground flex items-start gap-2"
-                          >
-                            <span className="text-primary mt-1">•</span>
-                            <span>{item}</span>
-                          </li>
-                        )
-                      )}
-                    </ul>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </AuthGuard>
   );
 }
