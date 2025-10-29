@@ -13,10 +13,9 @@ const sections: Footer[] = [
   {
     title: "Navigasi",
     links: [
-      { name: "Beranda", href: "#" },
-      { name: "Edukasi", href: "#" },
+      { name: "Beranda", href: "/" },
+      { name: "Edukasi", href: "/edukasi" },
       { name: "Deteksi Penyakit", href: "#" },
-      { name: "Olahan Pertanian", href: "#" },
     ],
   },
   {
@@ -24,7 +23,7 @@ const sections: Footer[] = [
     links: [
       { name: "Email", href: "#" },
       { name: "Phone", href: "#" },
-      { name: "Acco", href: "#" },
+      { name: "Account", href: "#" },
     ],
   },
   {
@@ -48,8 +47,7 @@ const Footer = () => {
               <span className="text-xl font-bold">AgroWin</span>
             </Link>
             <p className="mt-4 max-w-xs text-muted-foreground">
-              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse non
-              cupiditate quae nam molestias.
+              Aplikasi Pertanian Cerdas Berbasis Kecerdasan Buatan Untuk Membantu Petani Menanam Tanaman Dengan Efisien Dan Menguntungkan
             </p>
           </div>
 

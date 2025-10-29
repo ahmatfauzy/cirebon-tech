@@ -2,12 +2,14 @@
 
 import type React from "react";
 import { useState, useRef, useEffect } from "react";
-import { X, Send, Bot } from "lucide-react";
+import { X, Send, Bot, Hand } from "lucide-react";
 
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
+  /** utk efek ketikan */
+  show?: string;
 }
 
 interface ChatBotProps {
@@ -19,92 +21,126 @@ const ChatBot: React.FC<ChatBotProps> = ({ onChatStateChange }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
   const chatRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
+  /* ---------- buka/tutup ---------- */
   const toggleChat = () => {
-    const newState = !isOpen;
-    setIsOpen(newState);
-    onChatStateChange?.(newState);
+    const next = !isOpen;
+    setIsOpen(next);
+    onChatStateChange?.(next);
+    /* first open → tampilkan sambutan */
+    if (next && messages.length === 0) {
+      setMessages([
+        {
+          id: "welcome",
+          role: "assistant",
+          content: "",
+          show: "",
+        },
+      ]);
+      /* mulai animasi ketik */
+      setTimeout(
+        () =>
+          typeText(
+            "welcome",
+            "👋 Halo! Saya AgroBot, asisten untuk membantu seputar pertanian"
+          ),
+        300
+      );
+    }
   };
 
+  /* ---------- klik di luar ---------- */
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleOutside = (e: MouseEvent) => {
       if (
         isOpen &&
         chatRef.current &&
         buttonRef.current &&
-        !chatRef.current.contains(event.target as Node) &&
-        !buttonRef.current.contains(event.target as Node)
+        !chatRef.current.contains(e.target as Node) &&
+        !buttonRef.current.contains(e.target as Node)
       ) {
         setIsOpen(false);
         onChatStateChange?.(false);
       }
     };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
   }, [isOpen, onChatStateChange]);
 
+  /* ---------- efek ketik ---------- */
+  const typeText = (id: string, text: string) => {
+    let idx = 0;
+    const interval = setInterval(() => {
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === id ? { ...m, show: text.slice(0, idx + 1) } : m
+        )
+      );
+      idx++;
+      if (idx >= text.length) clearInterval(interval);
+    }, 25);
+  };
+
+  /* ---------- kirim pesan ---------- */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
-    const userMessage: Message = {
+    const userMsg: Message = {
       id: Date.now().toString(),
       role: "user",
       content: input,
+      show: input,
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/chat", {
+      const res = await fetch("/api/chat", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: [...messages, userMessage].map((msg) => ({
-            role: msg.role,
-            content: msg.content,
-          })),
+          messages: [...messages, userMsg]
+            .filter((m) => m.id !== "welcome")
+            .map((m) => ({ role: m.role, content: m.content })),
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      if (!res.ok) throw new Error(String(res.status));
 
-      const data = await response.json();
-
-      const assistantMessage: Message = {
+      const data = await res.json();
+      const botMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: data.content || data.message,
+        show: "",
       };
 
-      setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error("Chat error:", error);
-      const errorMessage: Message = {
+      setMessages((prev) => [...prev, botMsg]);
+      typeText(botMsg.id, botMsg.content); // animasi ketik
+    } catch {
+      const errMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: "Maaf, terjadi kesalahan. Silakan coba lagi.",
+        show: "",
       };
-      setMessages((prev) => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, errMsg]);
+      typeText(errMsg.id, errMsg.content);
     } finally {
       setIsLoading(false);
     }
   };
 
+  /* ---------- render ---------- */
   return (
     <>
-      {/* Floating Chat Button */}
+      {/* tombol floating */}
       <button
         ref={buttonRef}
         onClick={toggleChat}
@@ -118,10 +154,10 @@ const ChatBot: React.FC<ChatBotProps> = ({ onChatStateChange }) => {
               : "h-14 px-5 bg-primary hover:bg-primary/95 rounded-full gap-2"
           }
         `}
-        aria-label="Open chat"
+        aria-label={isOpen ? "Tutup chat" : "Buka chat"}
       >
         {isOpen ? (
-          <X size={22} className="transition-transform duration-200" />
+          <X size={22} />
         ) : (
           <>
             <Bot size={22} />
@@ -130,44 +166,38 @@ const ChatBot: React.FC<ChatBotProps> = ({ onChatStateChange }) => {
         )}
       </button>
 
-      {/* Chat Window */}
+      {/* jendela chat */}
       {isOpen && (
         <div
           ref={chatRef}
           className="fixed bottom-20 sm:bottom-24 right-10 left-6 sm:right-6 sm:left-auto sm:w-sm w-86 md:w-md max-w-[calc(100vw-2rem)] sm:h-[500px] h-[400px] bg-gray-900 rounded-lg shadow-2xl z-40 flex flex-col overflow-hidden"
         >
-          {/* Header */}
-          <div className="bg-primary/90 text-white p-4 rounded-t-lg">
-            <h3 className="font-semibold text-lg">AgroBot</h3>
-            <p className="text-sm text-blue-100">Asisten Seputar Pertanian</p>
+          {/* header */}
+          <div className="bg-primary/90 text-white p-4 rounded-t-lg flex items-center gap-3">
+            <Hand className="w-5 h-5 animate-pulse" />
+            <div>
+              <h3 className="font-semibold text-lg">AgroBot</h3>
+              <p className="text-sm text-blue-100">Asisten Seputar Pertanian</p>
+            </div>
           </div>
 
-          {/* Messages */}
+          {/* area pesan */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-800 chat-scroll">
-            {messages.length === 0 && (
-              <div className="text-gray-400 text-sm">
-                <p>
-                  👋 Halo! Saya AgroBot, asisten untuk membantu seputar
-                  pertanian
-                </p>
-              </div>
-            )}
-
-            {messages.map((message) => (
+            {messages.map((msg) => (
               <div
-                key={message.id}
+                key={msg.id}
                 className={`flex ${
-                  message.role === "user" ? "justify-end" : "justify-start"
+                  msg.role === "user" ? "justify-end" : "justify-start"
                 }`}
               >
                 <div
-                  className={`max-w-[80%] p-3 rounded-lg text-sm ${
-                    message.role === "user"
+                  className={`max-w-[80%] p-3 rounded-lg text-sm whitespace-pre-wrap ${
+                    msg.role === "user"
                       ? "bg-primary/90 text-white"
                       : "bg-gray-700 text-gray-100"
                   }`}
                 >
-                  {message.content}
+                  {msg.show}
                 </div>
               </div>
             ))}
@@ -181,7 +211,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ onChatStateChange }) => {
             )}
           </div>
 
-          {/* Input */}
+          {/* input */}
           <form
             className="p-4 border-t border-gray-700 bg-gray-900 box-border"
             onSubmit={handleSubmit}
@@ -196,7 +226,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ onChatStateChange }) => {
               />
               <button
                 type="submit"
-                className="cursor-pointer min-w-[40px] min-h-[40px] p-2 bg-primary/90 hover:bg-primary/95 text-white rounded-md flex items-center justify-center"
+                className="cursor-pointer min-w-[40px] min-h-[40px] p-2 bg-primary/90 hover:bg-primary/95 text-white rounded-md flex items-center justify-center disabled:opacity-60"
                 disabled={isLoading}
               >
                 <Send size={16} />

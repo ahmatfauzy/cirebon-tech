@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Handphone from "../../public/hp-hero-section.webp";
 import { Button } from "./ui/button";
-import { MoveUpRight } from "lucide-react";
+import Link from "next/link";
 import User from "../../public/profile-farmer.webp";
 
 export default function HeroSection() {
@@ -41,16 +41,12 @@ export default function HeroSection() {
 
               {/* Aksi */}
               <div className="mt-6 flex flex-wrap items-center gap-3">
-                <Button variant="roundedFull" className="py-4 px-6">
-                  Ayo Mulai
-                </Button>
-                <Button
-                  variant="roundedFull"
-                  className="bg-black hover:bg-black/90"
-                  aria-label="Pelajari lebih lanjut"
-                >
-                  <MoveUpRight className="size-4" aria-hidden="true" />
-                </Button>
+                <Link href="/deteksi" passHref>
+                  <Button asChild variant="roundedFull" className="py-4 px-6">
+                    <span>Ayo Mulai</span>
+                  </Button>
+                </Link>
+
               </div>
 
               {/* User */}

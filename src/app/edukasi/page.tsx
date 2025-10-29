@@ -3,145 +3,24 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { BookOpen, FileText, Search, Clock, GraduationCap } from "lucide-react";
-
-type Article = {
-  id: number;
-  slug: string;
-  title: string;
-  description: string;
-  category: "Artikel" | "Panduan Teknis";
-  icon: typeof FileText;
-  duration: string;
-  date: string;
-  image: string; // <- pakai string path dari /public
-  content: string;
-};
+import { Search, Clock, GraduationCap } from "lucide-react";
+import { articlesData } from "@/lib/articles-data";
 
 export default function EdukasiPage() {
   const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const articles: Article[] = [
-    {
-      id: 2,
-      slug: "crop-health-monitoring",
-      title: "Monitoring Kesehatan Tanaman Secara Real-time",
-      description:
-        "Panduan menggunakan platform untuk mendeteksi penyakit tanaman sejak dini dengan analitik visual.",
-      category: "Artikel",
-      icon: FileText,
-      duration: "8 menit baca",
-      date: "12 Okt 2024",
-      image: "/weather-prediction.jpg",
-      content:
-        "Deteksi dini penyakit tanaman adalah kunci untuk menjaga produktivitas lahan...",
-    },
-    {
-      id: 3,
-      slug: "predictive-analytics-ai",
-      title: "Memahami Predictive Analytics dengan AI",
-      description:
-        "Bagaimana teknologi AI membantu memprediksi hasil panen dan memberikan rekomendasi optimal.",
-      category: "Panduan Teknis",
-      icon: BookOpen,
-      duration: "15 menit",
-      date: "10 Okt 2024",
-      image: "/weather-prediction.jpg",
-      content:
-        "Predictive analytics menggunakan machine learning untuk menganalisis pola pertumbuhan tanaman...",
-    },
-    {
-      id: 5,
-      slug: "water-efficiency-optimization",
-      title: "Optimasi Penggunaan Air untuk Efisiensi Biaya",
-      description:
-        "Strategi menggunakan data untuk mengurangi biaya air sambil meningkatkan produktivitas lahan.",
-      category: "Artikel",
-      icon: FileText,
-      duration: "10 menit baca",
-      date: "05 Okt 2024",
-      image: "/weather-prediction.jpg",
-      content:
-        "Efisiensi penggunaan air adalah prioritas utama dalam pertanian modern...",
-    },
-    {
-      id: 6,
-      slug: "soil-analysis-guide",
-      title: "Analisis Tanah Menggunakan Platform AgroTech",
-      description:
-        "Panduan lengkap menganalisis kualitas tanah dan mendapatkan rekomendasi pemupukan yang tepat.",
-      category: "Panduan Teknis",
-      icon: BookOpen,
-      duration: "14 menit",
-      date: "03 Okt 2024",
-      image: "/weather-prediction.jpg",
-      content:
-        "Analisis tanah yang akurat adalah fondasi dari pertanian yang produktif...",
-    },
-    {
-      id: 8,
-      slug: "weather-prediction-planning",
-      title: "Perencanaan Tanam Berdasarkan Prediksi Cuaca",
-      description:
-        "Gunakan data cuaca untuk merencanakan waktu tanam dan panen yang optimal.",
-      category: "Artikel",
-      icon: FileText,
-      duration: "9 menit baca",
-      date: "28 Sep 2024",
-      image: "/weather-prediction.jpg",
-      content:
-        "Prediksi cuaca yang akurat membantu petani membuat keputusan yang lebih baik...",
-    },
-    {
-      id: 9,
-      slug: "fertilizer-management",
-      title: "Manajemen Pupuk yang Efisien dan Berkelanjutan",
-      description:
-        "Strategi pemupukan yang tepat untuk meningkatkan hasil panen sambil menjaga lingkungan.",
-      category: "Panduan Teknis",
-      icon: BookOpen,
-      duration: "13 menit",
-      date: "25 Sep 2024",
-      image: "/weather-prediction.jpg",
-      content:
-        "Pemupukan yang tepat adalah kunci untuk mendapatkan hasil panen maksimal...",
-    },
-    {
-      id: 11,
-      slug: "crop-rotation-planning",
-      title: "Perencanaan Rotasi Tanaman yang Optimal",
-      description:
-        "Panduan merencanakan rotasi tanaman untuk menjaga kesuburan tanah dan produktivitas jangka panjang.",
-      category: "Artikel",
-      icon: FileText,
-      duration: "11 menit baca",
-      date: "20 Sep 2024",
-      image: "/weather-prediction.jpg",
-      content:
-        "Rotasi tanaman yang tepat dapat meningkatkan kesuburan tanah secara alami...",
-    },
-    {
-      id: 12,
-      slug: "harvest-estimation-guide",
-      title: "Estimasi Hasil Panen dan Perencanaan Penjualan",
-      description:
-        "Gunakan kalkulator estimasi panen untuk merencanakan strategi penjualan yang menguntungkan.",
-      category: "Panduan Teknis",
-      icon: BookOpen,
-      duration: "12 menit",
-      date: "18 Sep 2024",
-      image: "/weather-prediction.jpg",
-      content:
-        "Estimasi panen yang akurat membantu petani merencanakan keuangan dengan lebih baik...",
-    },
-  ];
+  // Mapping kategori filter
+  const categoryMap: Record<string, (cat: string) => boolean> = {
+    Semua: () => true,
+    Artikel: (cat) => cat !== "Panduan Teknis",
+    "Panduan Teknis": (cat) => cat === "Panduan Teknis",
+  };
 
   const categories = ["Semua", "Artikel", "Panduan Teknis"];
 
-  const filteredArticles = articles.filter((article) => {
-    const matchCategory =
-      selectedCategory === "Semua" || article.category === selectedCategory;
+  const filteredArticles = articlesData.filter((article) => {
+    const matchCategory = categoryMap[selectedCategory](article.category);
     const matchSearch =
       article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       article.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -210,7 +89,6 @@ export default function EdukasiPage() {
           {/* Articles Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredArticles.map((article) => {
-              const Icon = article.icon;
               return (
                 <Link
                   key={article.id}
@@ -223,16 +101,16 @@ export default function EdukasiPage() {
                       <Image
                         width={500}
                         height={500}
-                        src={article.image}
+                        src={article.image || "/placeholder.svg"}
                         alt={article.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                       />
 
                       {/* Category Badge */}
-                      <div className="absolute flex items-center gap-2 top-3 right-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold">
+                      {/* <div className="absolute flex items-center gap-2 top-3 right-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold">
                         <Icon size={15} />
                         {article.category}
-                      </div>
+                      </div> */}
                     </div>
 
                     {/* Content */}
@@ -282,43 +160,89 @@ export default function EdukasiPage() {
 
       {/* FAQ Section */}
       <section className="py-16 md:py-24 bg-muted">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-12 text-center">
             Pertanyaan Umum
           </h2>
 
-          <div className="space-y-4">
-            {[
-              {
-                q: "Apakah saya perlu keahlian teknis untuk menggunakan AgroTech?",
-                a: "Tidak, AgroTech dirancang untuk semua level pengguna. Kami menyediakan tutorial lengkap dan dukungan pelanggan 24/7.",
-              },
-              {
-                q: "Berapa biaya untuk menggunakan semua fitur?",
-                a: "AgroTech menawarkan paket gratis untuk pemula dan paket premium dengan fitur lengkap mulai dari Rp 99.000/bulan.",
-              },
-              {
-                q: "Bagaimana cara mengintegrasikan dengan sistem yang sudah ada?",
-                a: "Kami mendukung integrasi dengan berbagai sistem. Lihat panduan integrasi di bagian Edukasi atau hubungi tim support kami.",
-              },
-              {
-                q: "Apakah data saya aman?",
-                a: "Ya, semua data Anda dienkripsi dan disimpan di server aman dengan backup otomatis setiap hari.",
-              },
-            ].map((faq, index) => (
-              <details
-                key={index}
-                className="bg-card border border-border rounded-lg p-6 cursor-pointer group"
-              >
-                <summary className="font-semibold text-foreground flex items-center justify-between">
-                  {faq.q}
-                  <span className="text-primary group-open:rotate-180 transition-transform">
-                    ▼
-                  </span>
-                </summary>
-                <p className="text-muted-foreground mt-4">{faq.a}</p>
-              </details>
-            ))}
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Kolom Kiri */}
+            <div className="space-y-4">
+              {[
+                {
+                  q: "Apa itu AgroWin?",
+                  a: "AgroWin adalah aplikasi berbasis AI yang membantu petani dan masyarakat umum dalam mengelola pertanian secara cerdas. Aplikasi ini menyediakan fitur deteksi penyakit tanaman lewat gambar, prediksi waktu tanam optimal berbasis data cuaca real-time dan sistem Fuzzy Logic, serta kalkulator hasil panen.",
+                },
+                {
+                  q: "Apakah AgroWin berbayar?",
+                  a: "Tidak. Semua fitur AgroWin dapat digunakan secara gratis oleh siapa pun. Tujuan utama kami adalah mendukung pertanian berkelanjutan melalui teknologi yang mudah diakses.",
+                },
+                {
+                  q: "Bagaimana cara kerja deteksi penyakit tanaman?",
+                  a: "Cukup unggah foto daun atau bagian tanaman yang terinfeksi. Sistem AI kami akan menganalisis gambar tersebut dan memberikan hasil deteksi beserta saran penanganannya berdasarkan basis data penyakit tanaman.",
+                },
+                {
+                  q: "Apa fungsi sistem Fuzzy Logic di AgroWin?",
+                  a: "Fuzzy Logic digunakan untuk menentukan waktu tanam terbaik berdasarkan data cuaca real-time, seperti suhu, curah hujan, dan kelembapan. Hasilnya membantu petani menanam di waktu paling ideal agar hasil panen optimal.",
+                },
+                {
+                  q: "Apakah saya perlu memiliki keahlian teknis untuk menggunakan AgroWin?",
+                  a: "Tidak sama sekali. AgroWin dirancang agar mudah digunakan oleh siapa pun, termasuk petani tradisional. Antarmuka sederhana dan panduan penggunaan tersedia di dalam aplikasi.",
+                },
+              ].map((faq, index) => (
+                <details
+                  key={index}
+                  className="bg-card border border-border rounded-lg p-6 cursor-pointer group"
+                >
+                  <summary className="font-semibold text-foreground flex items-center justify-between">
+                    {faq.q}
+                    <span className="text-primary group-open:rotate-180 transition-transform">
+                      ▼
+                    </span>
+                  </summary>
+                  <p className="text-muted-foreground mt-4">{faq.a}</p>
+                </details>
+              ))}
+            </div>
+
+            {/* Kolom Kanan */}
+            <div className="space-y-4">
+              {[
+                {
+                  q: "Bagaimana cara menggunakan kalkulator panen?",
+                  a: "Anda hanya perlu memasukkan jenis tanaman, luas lahan, dan estimasi produktivitas. AgroWin akan menghitung estimasi hasil panen dan potensi keuntungan berdasarkan harga pasar terkini.",
+                },
+                {
+                  q: "Dari mana data cuaca dan iklim diperoleh?",
+                  a: "AgroWin mengambil data cuaca real-time dari API terpercaya seperti OpenWeatherMap untuk memastikan hasil analisis dan prediksi yang akurat.",
+                },
+                {
+                  q: "Apakah data pengguna aman?",
+                  a: "Ya. Kami menjaga privasi pengguna dengan sistem enkripsi dan tidak membagikan data pribadi kepada pihak ketiga. Semua data hanya digunakan untuk meningkatkan akurasi layanan.",
+                },
+                {
+                  q: "Bagaimana sistem dari AgroWin?",
+                  a: "AgroWin menggunakan dataset dalam pengembangan model AI untuk memberikan hasil yang akurat. Dan juga menggunakan metode terbaik seperti Fuzzy Logic dan algoritma machine learning lainnya untuk memberikan hasil yang akurat.",
+                },
+                {
+                  q: "Bagaimana jika saya menemukan bug atau ingin memberi saran?",
+                  a: "Kami sangat terbuka terhadap masukan! Anda dapat mengirim laporan melalui menu 'Hubungi Kami' di aplikasi atau melalui email resmi AgroWin.",
+                },
+              ].map((faq, index) => (
+                <details
+                  key={index}
+                  className="bg-card border border-border rounded-lg p-6 cursor-pointer group"
+                >
+                  <summary className="font-semibold text-foreground flex items-center justify-between">
+                    {faq.q}
+                    <span className="text-primary group-open:rotate-180 transition-transform">
+                      ▼
+                    </span>
+                  </summary>
+                  <p className="text-muted-foreground mt-4">{faq.a}</p>
+                </details>
+              ))}
+            </div>
           </div>
         </div>
       </section>
